@@ -13,6 +13,7 @@ val menuList = File("data/tavern-menu-data.txt")
         .split("\n")
 
 fun main() {
+    println(formatMenu())
     if (patronList.contains("Eli")) {
         println("The tavern master says: Eli is in the back, playing cards.")
     } else {
@@ -89,3 +90,21 @@ private fun toDragonSpeak(phrase: String) =
                 else -> it.value
             }
         }
+private fun formatMenu(): String {
+    val longestMenuItem = menuList.maxBy {
+        it.length
+    }?.count() ?: 0
+
+    var formattedMenu = "*** Welcome to Taernyl's folly ***\n"
+    val titlePadding = longestMenuItem - formattedMenu.count()
+    formattedMenu = formattedMenu.replace(Regex("\\*\\s+"), "*" + " ".repeat(titlePadding))
+            .replace(Regex("\\s+\\*"), " ".repeat(titlePadding) + "*")
+
+    menuList.forEach {
+        val subitems = it.split(",")
+        val menuSubString = "${subitems[1]}${subitems[2]}"
+        val padding = longestMenuItem - menuSubString.count()
+        formattedMenu += "\n${subitems[1]}${".".repeat(padding)}${subitems[2]}"
+    }
+    return formattedMenu
+}
