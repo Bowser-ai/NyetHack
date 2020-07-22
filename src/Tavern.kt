@@ -1,32 +1,49 @@
+import java.lang.IllegalStateException
 import kotlin.math.roundToInt
 
 const val TAVERN_NAME = "Taernyl's Folly"
 
-var playerGold = 10
-var playerSilver = 10
+var playerDragonCoin = 5
+var dragonBreathCask = 5.00
+const val ONE_PINT = 0.125
+val FULL_CASKET = dragonBreathCask / ONE_PINT
 
 fun main() {
-    placeOrder("shandy,Dragon's Breath,5.91")
+    try {
+        (1..12).forEach { _ ->
+            placeOrder("shandy,Dragon's Breath,5.91")
+        }
+    } catch (e : NotEnoughGold) {
+        println("The bartender explains that you have not enough money, get out of here!!")
+    }
+}
+
+fun drawFromCase(numberOfPints: Int) {
+    val drawFromCasket = numberOfPints * ONE_PINT
+    if (drawFromCasket > dragonBreathCask) throw IllegalStateException("casket is empty")
+    dragonBreathCask -= drawFromCasket
+    val pintsLeft = (dragonBreathCask / ONE_PINT).toInt()
+    if (FULL_CASKET.toInt() - pintsLeft == 12) {
+        println("Pint left in the casket $pintsLeft")
+    }
 }
 
 fun performPurchase(price: Double) {
     displayBalance()
-    val totalPurse = playerGold + (playerSilver / 100.0)
-    println("Total purse: $totalPurse")
+    val totalPurse = playerDragonCoin * 1.43
+    if (price > totalPurse) throw NotEnoughGold()
+    println("Total purse: %.2f".format(totalPurse))
     println("Purchasing item for $price")
 
     val remainingBalance = totalPurse - price
-    println("Remaining balance: ${"%.2f".format(remainingBalance)}")
+    println("Remaining balance: ${"%.4f".format(remainingBalance / 1.43)}")
 
-    val remainingGold = remainingBalance.toInt()
-    val remainingSilver = (remainingBalance % 1 * 100).roundToInt()
-    playerGold = remainingGold
-    playerSilver = remainingSilver
     displayBalance()
+    drawFromCase(1)
 }
 
 private fun displayBalance() {
-    println("Player's purse balance: Gold: $playerGold , Silver: $playerSilver")
+    println("Player's purse balance: DragonCoins $playerDragonCoin")
 }
 
 private fun placeOrder(menuData: String) {
@@ -58,3 +75,5 @@ private fun toDragonSpeak(phrase: String) =
                 else -> it.value
             }
         }
+
+class NotEnoughGold() : Exception()
