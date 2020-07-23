@@ -2,7 +2,7 @@ package com.vermeulen.nyethack
 
 fun main() {
 
-    val player = Player()
+    val player = Player("Madrigal")
     player.castFireball()
     val auraColor = player.auraColor()
 

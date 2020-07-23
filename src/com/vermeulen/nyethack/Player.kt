@@ -1,16 +1,33 @@
 package com.vermeulen.nyethack
 
-class Player {
-    var name = "madrigal"
-    get() = field.capitalize()
-    private set(value) {
-        field = value.trim()
-    }
-    var healthPoints = 89
-    val isBlessed = true
-    private val isImmortal = false
+import java.io.File
 
-     fun castFireball(numFireballs: Int = 2) {
+class Player( _name: String,
+              private var healthPoints: Int = 100,
+              val isBlessed: Boolean,
+              private val isImmortal: Boolean) {
+
+    var name = _name
+        get() = "${field.capitalize()} of $homeTown"
+        private set(value) {
+            field = value.trim()
+        }
+
+    private val homeTown by lazy { selectHomeTown() }
+
+    init {
+        require(healthPoints > 0) {"healthpoints must be greater than zero"}
+        require(name.isNotBlank()) {"Player must have a name"}
+    }
+
+    constructor(name: String) : this(name,
+    healthPoints = 100,
+    isBlessed = true,
+    isImmortal = false) {
+        if (name.toLowerCase() == "kar") healthPoints = 40
+    }
+
+    fun castFireball(numFireballs: Int = 2) {
         println("A glass of fireball springs into existence. (x$numFireballs)")
     }
 
@@ -29,4 +46,10 @@ class Player {
                 in 15..74 -> " looks pretty hurt"
                 else -> " is in awful condition"
             }
+
+    private fun selectHomeTown() = File("data/towns.txt")
+            .readText()
+            .split("\n")
+            .shuffled()
+            .first()
 }
