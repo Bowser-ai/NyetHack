@@ -1,6 +1,7 @@
+package com.vermeulen.nyethack
+
 import java.io.File
 import java.lang.IllegalStateException
-import kotlin.math.roundToInt
 
 const val TAVERN_NAME = "Taernyl's Folly"
 

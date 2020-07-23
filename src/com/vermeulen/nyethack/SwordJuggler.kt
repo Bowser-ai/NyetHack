@@ -1,3 +1,5 @@
+package com.vermeulen.nyethack
+
 import java.lang.IllegalStateException
 
 fun main() {
@@ -16,7 +18,7 @@ fun main() {
 }
 
 private fun proficiencyCheck(swordsJuggling: Int?) {
-    checkNotNull(swordsJuggling) {"Player cannot juggle"}
+    checkNotNull(swordsJuggling) {"com.vermeulen.nyethack.Player cannot juggle"}
 }
 
-class UnskilledSwordJugglerException() : IllegalStateException("Player cannot juggle")
+class UnskilledSwordJugglerException() : IllegalStateException("com.vermeulen.nyethack.Player cannot juggle")
