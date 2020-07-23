@@ -95,16 +95,24 @@ private fun formatMenu(): String {
         it.length
     }?.count() ?: 0
 
-    var formattedMenu = "*** Welcome to Taernyl's folly ***\n"
+    var formattedMenu = "*** Welcome to Taernyl's folly ***"
     val titlePadding = longestMenuItem - formattedMenu.count()
     formattedMenu = formattedMenu.replace(Regex("\\*\\s+"), "*" + " ".repeat(titlePadding))
             .replace(Regex("\\s+\\*"), " ".repeat(titlePadding) + "*")
 
-    menuList.forEach {
-        val subitems = it.split(",")
-        val menuSubString = "${subitems[1]}${subitems[2]}"
-        val padding = longestMenuItem - menuSubString.count()
-        formattedMenu += "\n${subitems[1]}${".".repeat(padding)}${subitems[2]}"
+    val groupedMenuList = menuList.groupBy {
+        it.split(",")[0]
+    }
+
+    groupedMenuList.forEach {group ->
+        formattedMenu += "\n" + " ".repeat((longestMenuItem - group.key.length) / 2) + "~[${group.key}]~"
+        group.value.forEach { groupItem ->
+            val subitems = groupItem.split(",")
+            val menuSubString = "${subitems[1]}${subitems[2]}"
+            val padding = longestMenuItem - menuSubString.count()
+            formattedMenu += "\n${subitems[1]}${".".repeat(padding)}${subitems[2]}"
+        }
     }
     return formattedMenu
 }
+
