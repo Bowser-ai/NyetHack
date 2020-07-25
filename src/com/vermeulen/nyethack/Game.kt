@@ -1,6 +1,6 @@
 package com.vermeulen.nyethack
 
-import java.lang.IllegalStateException
+import kotlin.system.exitProcess
 
 fun main() {
     Game.play()
@@ -23,11 +23,11 @@ object Game {
             println(currentRoom.description())
             println(currentRoom.load())
 
-            printPlayerStatus(player)
+            printPlayerStatus()
 
             print("> Enter your command: ")
             val command = GameInput(readLine()).processCommand()
-            println("Last command: $command")
+            println("Last command: \n$command")
             if (command == "quit") {
                 println("by adventure, see you next time")
                 return
@@ -50,12 +50,54 @@ object Game {
                 "Invalid direction: $directionInput"
             }
 
-    private fun printPlayerStatus(player: Player) {
+    private fun fight() = currentRoom.monster?.let {
+        while (player.healthPoints > 0 && it.healthPoints >0 ) {
+            slay(it)
+            Thread.sleep(1000)
+        }
+        "Combat complete."
+    } ?: "There is nothing here to fight"
+
+    private fun slay(monster: Monster) {
+        println("${monster.name} did ${monster.attack(player)} damage")
+        println("${player.name} did ${player.attack(monster)} damage")
+
+        if (player.healthPoints <= 0) {
+            println(">>>>> You have been defeated! Thanks for playing. <<<<<<")
+            exitProcess(0)
+        }
+
+        if (monster.healthPoints <= 0) {
+            println(">>>>> ${monster.name} has been defeated! <<<<<")
+            currentRoom.monster = null
+        }
+    }
+
+    private fun printPlayerStatus() {
         println(
                 "(Aura: ${player.auraColor()}) " +
                         "(Blessed: ${if (player.isBlessed) "YES" else "NO"})"
         )
         println("${player.name}${player.formatHealthStatus()}")
+    }
+
+    private fun ringBell(): String {
+        val defaultMsg = "There are no bells to ring!"
+        if (currentRoom is TownSquare) {
+            return (currentRoom as? TownSquare)?.ringBell() ?: defaultMsg
+        }
+        return defaultMsg
+    }
+
+    private fun showMap(): String {
+        var map = ""
+        worldMap.forEachIndexed { y, row ->
+            row.forEachIndexed { x, _ ->
+                map += if (Coordinate(x, y) == player.currentPosition) " X " else " O "
+            }
+            map += "\n"
+        }
+        return map
     }
 
     private class GameInput(arg: String?) {
@@ -69,6 +111,9 @@ object Game {
             "move" -> move(argument)
             "quit" -> "quit"
             "exit" -> "quit"
+            "map" -> showMap()
+            "ring" -> ringBell()
+            "fight" -> fight()
             else -> commandNotFound()
         }
     }

@@ -2,16 +2,30 @@ package com.vermeulen.nyethack
 
 import java.io.File
 
-class Player( _name: String,
-              private var healthPoints: Int = 100,
-              val isBlessed: Boolean,
-              private val isImmortal: Boolean) {
+class Player(_name: String,
+             override var healthPoints: Int = 100,
+             val isBlessed: Boolean,
+             private val isImmortal: Boolean): Fightable {
 
     var name = _name
         get() = "${field.capitalize()} of $homeTown"
         private set(value) {
             field = value.trim()
         }
+
+    override val diceCount = 3
+
+    override val diceSides = 6
+
+    override fun attack(oppenent: Fightable): Int {
+        val damageDealt = if (isBlessed) {
+            damageRoll * 2
+        } else {
+            damageRoll
+        }
+        oppenent.healthPoints -= damageDealt
+        return damageDealt
+    }
 
     private val homeTown by lazy { selectHomeTown() }
     var currentPosition = Coordinate(0, 0)
